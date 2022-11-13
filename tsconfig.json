@@ -17,11 +17,10 @@
     "strictBindCallApply": false,
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false,
-    "rootDir": "src",
     "esModuleInterop": true
   },  
   "include": [
-    "src/"
+    "src/**/*"
   ],
   "exclude": ["node_modules/*", "test/*", "dist/*"]
 }

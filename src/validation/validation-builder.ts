@@ -1,5 +1,8 @@
 import z from "zod";
 
+// TODO: Refactor
+// TODO: Requirements
+
 export enum Requirements {
   MIN = "min",
   MAX = "max",
@@ -40,6 +43,7 @@ export class ValidationBuilder {
   }
 
   getResult() {
+    // TODO: Refactor
     if (this.paramDataType === "number") {
       return z.preprocess((input) => {
         const processed = z
