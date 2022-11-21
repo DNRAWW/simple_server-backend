@@ -2,9 +2,9 @@ import z from "zod";
 import { Express } from "express";
 import * as uuid from "uuid";
 import {
-  paramTypes,
   TParamsShape,
   TRouteParam,
+  ValidationBuilder,
 } from "../validation/validation-builder";
 import { Knex } from "knex";
 import { db } from "../DB/db-connection";
@@ -42,8 +42,12 @@ export class RouteCreator {
 
     const paramsShape: TParamsShape = {};
 
+    const validationBuilder = new ValidationBuilder("string");
+
     for (const param of params) {
-      paramsShape[param.name] = paramTypes[param.type]();
+      validationBuilder.reset(param.type);
+      const paramValidation = validationBuilder.getResult();
+      paramsShape[param.name] = paramValidation;
     }
 
     const validation = z.object({
