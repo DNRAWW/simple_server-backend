@@ -6,10 +6,9 @@ import {
   TParamsShape,
   TRouteParam,
 } from "../validation/validation-builder";
-import { TableDescriptionCreator } from "../DB/table-description-creator";
-import { TableCreator } from "../DB/table-creator";
 import { Knex } from "knex";
 import { db } from "../DB/db-connection";
+import { createTable } from "../DB/tableCreatorFunctions";
 
 export class RouteCreator {
   private appInstance: Express;
@@ -55,25 +54,7 @@ export class RouteCreator {
       throw Error("Can't have 0 params");
     }
 
-    // TODO: Move db stuff somewhere else
-
-    if (tableName.trim().length < 2) {
-      throw Error("Can't create a table with name less than 4 chars");
-    }
-
-    const tableDescriptionCreator = new TableDescriptionCreator();
-
-    tableDescriptionCreator.setName(tableName);
-
-    for (const param of params) {
-      tableDescriptionCreator.addField(param.name, param.type, param.required);
-    }
-
-    const tableDescription = tableDescriptionCreator.getResult();
-
-    await new TableCreator().createTable(tableDescription);
-
-    // End of db stuff
+    createTable(tableName, params);
 
     const pathUUID = uuid.v4();
 
