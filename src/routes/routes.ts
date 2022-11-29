@@ -1,1 +1,1 @@
-function defaultRoutes() {}
+export function initRoutes() {}

@@ -1,4 +1,4 @@
-import z from "zod";
+import z, { ZodString } from "zod";
 
 // TODO: Refactor
 // TODO: Requirements
@@ -65,5 +65,36 @@ export class ValidationBuilder {
   reset(dataType: "string" | "number") {
     this.paramDataType = dataType;
     this.result = paramTypes[this.paramDataType]();
+  }
+
+  min(minValue: number) {
+    if (this.paramDataType === "number") {
+      (this.result as z.ZodNumber).min(minValue);
+    }
+  }
+
+  max(maxValue: number) {
+    if (this.paramDataType === "number") {
+      (this.result as z.ZodNumber).min(maxValue);
+    }
+  }
+
+  maxLength(maxLength: number) {
+    if (this.paramDataType === "string") {
+      (this.result as z.ZodString).max(maxLength);
+    }
+  }
+
+  minLength(minLength: number) {
+    if (this.paramDataType === "string") {
+      (this.result as z.ZodString).max(minLength);
+    }
+  }
+
+  alphanum() {
+    if (this.paramDataType === "string") {
+      // TODO: install "validator"
+      this.result as z.ZodString;
+    }
   }
 }

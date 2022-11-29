@@ -10,7 +10,7 @@ export async function createTable(
   }[]
 ) {
   if (tableName.trim().length < 2) {
-    throw Error("Can't create a table with name less than 4 chars");
+    throw Error("Can't create a table with name less than 2 chars");
   }
 
   const tableDescriptionCreator = new TableDescriptionCreator();
