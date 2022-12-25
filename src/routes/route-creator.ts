@@ -2,6 +2,7 @@ import z from "zod";
 import { Express } from "express";
 import * as uuid from "uuid";
 import {
+  Requirements,
   TParamsShape,
   TRouteParam,
   ValidationBuilder,
@@ -42,10 +43,24 @@ export class RouteCreator {
 
     const paramsShape: TParamsShape = {};
 
-    const validationBuilder = new ValidationBuilder("string");
+    const validationBuilder = new ValidationBuilder();
 
     for (const param of params) {
       validationBuilder.reset(param.type);
+
+      if (param.required === false) {
+        validationBuilder.optional();
+      }
+
+      if (param.requirements) {
+        for (const requirement of param.requirements) {
+          validationBuilder.functionByString(
+            requirement.type,
+            requirement.value
+          );
+        }
+      }
+
       const paramValidation = validationBuilder.getResult();
       paramsShape[param.name] = paramValidation;
     }
@@ -55,7 +70,7 @@ export class RouteCreator {
     });
 
     if (params.length < 1) {
-      throw Error("Can't have 0 params");
+      throw Error("Can't have 0 params, yet..."); // Maybe in the future add ability to create a route to do some action
     }
 
     createTable(tableName, params);

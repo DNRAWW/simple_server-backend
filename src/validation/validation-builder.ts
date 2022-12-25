@@ -1,4 +1,5 @@
-import z, { ZodString } from "zod";
+import z from "zod";
+import validator from "validator";
 
 // TODO: Refactor
 // TODO: Requirements
@@ -6,14 +7,12 @@ import z, { ZodString } from "zod";
 export enum Requirements {
   MIN = "min",
   MAX = "max",
-  MIN_LENGTH = "min_length",
-  MAX_LENGTH = "max_length",
   ALPHANUM = "alphanum",
 }
 
 export type TRequirement = {
   type: Requirements;
-  value: number | boolean;
+  value: number | undefined;
 };
 
 export type TParamsShape = {
@@ -47,9 +46,14 @@ export type TRouteParam = {
 export class ValidationBuilder {
   private paramDataType: "string" | "number";
 
-  private result: z.ZodString | z.ZodNumber | null = null;
+  private result: z.ZodTypeAny | null = null;
 
-  constructor(dataType: "string" | "number") {
+  constructor(dataType?: "string" | "number" | undefined) {
+    if (!dataType) {
+      this.paramDataType = "string";
+      return;
+    }
+
     this.paramDataType = dataType;
     this.result = paramTypes[this.paramDataType]();
   }
@@ -67,34 +71,39 @@ export class ValidationBuilder {
     this.result = paramTypes[this.paramDataType]();
   }
 
+  functionByString(functionName: Requirements, value?: number | undefined) {
+    const validatitonFunctionsMap: {
+      [key in Requirements]: Function;
+    } = {
+      min: this.min.bind(this),
+      max: this.max.bind(this),
+      alphanum: this.alphanum.bind(this),
+    };
+
+    validatitonFunctionsMap[functionName](value);
+  }
+
+  optional() {
+    this.result = this.result.optional();
+  }
+
   min(minValue: number) {
-    if (this.paramDataType === "number") {
-      (this.result as z.ZodNumber).min(minValue);
-    }
+    this.result = (this.result as z.ZodNumber | z.ZodString).min(minValue);
   }
 
   max(maxValue: number) {
-    if (this.paramDataType === "number") {
-      (this.result as z.ZodNumber).min(maxValue);
-    }
-  }
-
-  maxLength(maxLength: number) {
-    if (this.paramDataType === "string") {
-      (this.result as z.ZodString).max(maxLength);
-    }
-  }
-
-  minLength(minLength: number) {
-    if (this.paramDataType === "string") {
-      (this.result as z.ZodString).max(minLength);
-    }
+    this.result = (this.result as z.ZodNumber | z.ZodString).max(maxValue);
   }
 
   alphanum() {
     if (this.paramDataType === "string") {
-      // TODO: install "validator"
-      this.result as z.ZodString;
+      this.result = (this.result as z.ZodString).refine(
+        (val) => validator.isAlphanumeric(val, "en-US"),
+        "String contains chars that are not allowed"
+      );
+      return;
     }
+
+    throw new Error("Wrong type");
   }
 }

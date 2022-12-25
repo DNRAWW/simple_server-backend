@@ -1,11 +1,15 @@
 import express from "express";
 import dotenv from "dotenv";
 import { RouteCreator } from "./routes/route-creator";
+import { Requirements } from "./validation/validation-builder";
+import { z } from "zod";
 
 dotenv.config({
   path: ".env",
   debug: true,
 });
+
+// TODO: Rate limiter
 
 function main() {
   const app = express();
@@ -26,6 +30,12 @@ function main() {
         name: "text",
         required: true,
         type: "string",
+        requirements: [
+          {
+            type: Requirements.MIN,
+            value: 10,
+          },
+        ],
       },
     ]);
   });
