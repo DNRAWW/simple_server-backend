@@ -1,9 +1,6 @@
-// TODO: make class that will create
-// tables with fields from user input
-
 type TTableField = {
   name: string;
-  type: "string" | "number"; // In the future more and enum
+  type: "string" | "number"; // In the future more
   required: boolean;
 };
 

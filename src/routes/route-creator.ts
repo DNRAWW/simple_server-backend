@@ -2,7 +2,6 @@ import z from "zod";
 import { Express } from "express";
 import * as uuid from "uuid";
 import {
-  Requirements,
   TParamsShape,
   TRouteParam,
   ValidationBuilder,
@@ -32,7 +31,7 @@ export class RouteCreator {
 
   static getInstance() {
     if (!this.routeCreatorInstance) {
-      throw Error("Route creater class is not initialized");
+      throw Error("Route creator class is not initialized");
     }
 
     return this.routeCreatorInstance;
